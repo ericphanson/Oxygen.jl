@@ -3,25 +3,27 @@ using RelocatableFolders
 
 export oxidize
 
-function extract_filename(include_str::String)
+function fullpath(path::AbstractString) :: String
+    return @path abspath(joinpath(@__DIR__, path)) |> String
+end
+
+function extract_filename(include_str::String, include_regex::Regex)
     # Regular expression to match the pattern include("filename")
-    match_result = match(r"include\(\"([^\"]+)\"\)", include_str)
+    match_result = match(include_regex, include_str)
     if match_result !== nothing
         return match_result.captures[1]  # Return the captured filename
     else
-        return "No filename found"
+        throw("No filename found")
     end
 end
 
-function preprocess_includes(content::String)
-    # Regular expression to match include calls
-    include_regex = r"include\(\"(.*)\"\)"
+function preprocess_includes(content::String, include_regex::Regex = r"include\(\"(.*)\"\)")    
 
     # Function to replace include calls with absolute paths
     function replace_include(match)
         # Extract the path from the match
-        path = String(match) |> extract_filename
-        absolute_path = @path abspath(joinpath(@__DIR__, path)) 
+        path = extract_filename(String(match), include_regex)
+        absolute_path = fullpath(path)
         # Return the updated include call
         return "include(\"$absolute_path\")"
     end
@@ -38,8 +40,8 @@ The module is loaded into the current scope under the name `custom_module`.
 """
 
 function load(path::String)
-  
-    absolute_path = @path abspath(joinpath(@__DIR__, path)) 
+
+    absolute_path = fullpath(path)
 
     if !isfile(absolute_path)
         throw("not a valid file")
@@ -47,10 +49,11 @@ function load(path::String)
 
     # Read the file content
     content = read(absolute_path, String)
+
     # Preprocess includes to adjust paths
     processed_content = preprocess_includes(content)
+
     quote
-        import Base
         # Execute the preprocessed content
         custom_module = include_string(@__MODULE__, $(processed_content))
         using .custom_module
@@ -71,12 +74,11 @@ end
 
 """
     setup()
-    Load the core file and any other files that are needed
+    Load any other files that are needed to run the Oxygen module
 """
 function setup()
-    CORE_FILE = @path abspath(joinpath(@__DIR__, "core.jl"))
     combine_loads([
-        String(CORE_FILE),
+        fullpath("Oxygen.jl")
     ])
 end
 

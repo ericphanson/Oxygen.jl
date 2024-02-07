@@ -12,7 +12,7 @@ app1.get("/") do
 end
 
 app1.@get "/subtract/{a}/{b}" function(req, a::Int, b::Int) 
-    a - b
+    ("answer" => a - b)
 end
 
 # Setup the second app
@@ -23,15 +23,17 @@ app2.get("/") do
 end
 
 app2.@get "/add/{a}/{b}" function(req, a::Int, b::Int) 
-    a + b
+    ("answer" => a + b)
 end
 
-# start both servers together
-app1.serve(async=true)
-app2.serve(port=8081)
-
-# clean it up
-app1.terminate()
-app2.terminate()
+try 
+    # start both servers together
+    app1.serve(port=8080, async=true)
+    app2.serve(port=8081)
+finally
+    # clean it up
+    app1.terminate()
+    app2.terminate()
+end
 
 end
