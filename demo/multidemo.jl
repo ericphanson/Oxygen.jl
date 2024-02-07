@@ -4,14 +4,34 @@ include("../src/Oxygen.jl")
 using .Oxygen
 using HTTP
 
-# @get "/" function(req::HTTP.Request)
-#     return "hello world!"
-# end
+# Setup the first app
+app1 = oxidize()
 
-app = gen_module()
+app1.get("/") do 
+    "welcome to server #1"
+end
 
-println(app)
+app1.@get "/subtract/{a}/{b}" function(req, a::Int, b::Int) 
+    a - b
+end
 
+# Setup the second app
+app2 = oxidize()
 
+app2.get("/") do 
+    "welcome to server #2"
+end
+
+app2.@get "/add/{a}/{b}" function(req, a::Int, b::Int) 
+    a + b
+end
+
+# start both servers together
+app1.serve(async=true)
+app2.serve(port=8081)
+
+# clean it up
+app1.terminate()
+app2.terminate()
 
 end

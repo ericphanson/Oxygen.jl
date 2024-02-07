@@ -2,7 +2,7 @@ module Oxygen
 
 include("core.jl"); using .Core
 
-include("wrapper.jl"); using .Wrapper
+include("instances.jl"); using .Instances
 
 # Load any optional extensions
 include("extensions/load.jl");
@@ -15,5 +15,5 @@ export @get, @post, @put, @patch, @delete, @route, @cron,
         html, text, json, file, xml, js, json, css, binary,
         configdocs, mergeschema, setschema, getschema, router,
         enabledocs, disabledocs, isdocsenabled, starttasks, stoptasks,
-        resetstate, startcronjobs, stopcronjobs, clearcronjobs, gen_module
+        resetstate, startcronjobs, stopcronjobs, clearcronjobs, oxidize
 end
