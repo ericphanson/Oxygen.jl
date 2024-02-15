@@ -17,7 +17,7 @@ const REDOC_VERSION = "redoc@2.1.2"
 
 # Generate a reliable path to our internal data folder that works when the 
 # package is used with PackageCompiler.jl
-const DATA_PATH = @path abspath(joinpath(@__DIR__, "..", "data"))
+const DATA_PATH = abspath(joinpath(@__DIR__, "..", "data"))
 
 
 struct TaggedRoute 

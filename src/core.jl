@@ -27,7 +27,7 @@ global const timers = Ref{Vector{Timer}}([])
 
 # Generate a reliable path to our internal data folder that works when the 
 # package is used with PackageCompiler.jl
-global const DATA_PATH = @path abspath(joinpath(@__DIR__, "..", "data"))
+global const DATA_PATH = abspath(joinpath(@__DIR__, "..", "data"))
 
 oxygen_title = raw"""
    ____                            
